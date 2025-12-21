@@ -1,0 +1,33 @@
+{
+  "name": "ft_transcendence_backend",
+  "version": "1.0.0",
+  "description": "Fastify backend for ft_transcendence",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@fastify/cors": "^8.4.1",
+    "@fastify/jwt": "^7.2.3",
+    "@fastify/websocket": "^8.2.0",
+    "@types/qrcode": "^1.5.6",
+    "@types/speakeasy": "^2.0.10",
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.3.1",
+    "ethers": "^6.8.1",
+    "fastify": "^4.24.3",
+    "qrcode": "^1.5.4",
+    "speakeasy": "^2.0.0",
+    "sqlite3": "^5.1.6"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.1",
+    "@types/node": "^20.8.10",
+    "@types/sqlite3": "^3.1.11",
+    "@types/ws": "^8.5.8",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.2.2"
+  }
+}

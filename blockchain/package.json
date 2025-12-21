@@ -1,0 +1,16 @@
+{
+    "name": "ft_transcendence_blockchain",
+    "version": "1.0.0",
+    "description": "Blockchain module for ft_transcendence",
+    "scripts": {
+        "test": "hardhat test",
+        "compile": "hardhat compile",
+        "deploy": "hardhat run scripts/deploy.ts"
+    },
+    "devDependencies": {
+        "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+        "hardhat": "^2.19.0",
+        "typescript": "^5.2.2",
+        "ts-node": "^10.9.1"
+    }
+}
