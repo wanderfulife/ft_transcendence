@@ -13,27 +13,52 @@ export function GameCanvas() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const ws = useRef<WebSocket | null>(null);
     const [status, setStatus] = useState<string>('Connecting...');
+    const [gameStarted, setGameStarted] = useState(false);
+    const [modeSelected, setModeSelected] = useState(false);
+
+    const sendMove = (direction: 'up' | 'down') => {
+        if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+            ws.current.send(JSON.stringify({ type: 'MOVE', direction }));
+        }
+    };
+
+    const joinGame = (mode: 'ONLINE' | 'BOT') => {
+        if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+            setModeSelected(true);
+            const userId = Math.floor(Math.random() * 10000);
+            if (mode === 'BOT') {
+                setStatus('Starting Bot Game...');
+                ws.current.send(JSON.stringify({ type: 'INIT', userId, mode: 'BOT' }));
+            } else {
+                setStatus('Searching for opponent...');
+                ws.current.send(JSON.stringify({ type: 'INIT', userId }));
+            }
+        }
+    };
 
     useEffect(() => {
         // Connect to WebSocket
         ws.current = new WebSocket('ws://localhost:3000/ws');
 
         ws.current.onopen = () => {
-            setStatus('Connected. Waiting for opponent...');
-            // Send INIT message with random ID for now (or from auth context)
-            const userId = Math.floor(Math.random() * 10000);
-            ws.current?.send(JSON.stringify({ type: 'INIT', userId }));
+            setStatus('Connected. Select Game Mode:');
         };
 
         ws.current.onmessage = (event) => {
             const data = JSON.parse(event.data);
 
             if (data.type === 'START') {
+                setGameStarted(true);
                 setStatus(`Game Started! You are Player ${data.player}`);
             } else if (data.type === 'UPDATE') {
                 draw(data.state);
             } else if (data.type === 'GAME_OVER') {
                 setStatus(`Game Over! Winner: Player ${data.winner}`);
+                setTimeout(() => {
+                    setGameStarted(false);
+                    setModeSelected(false);
+                    setStatus('Game Over. Select Game Mode:');
+                }, 3000);
             } else if (data.type === 'WAITING') {
                 setStatus('Waiting for opponent...');
             }
@@ -49,9 +74,11 @@ export function GameCanvas() {
             if (!ws.current || ws.current.readyState !== WebSocket.OPEN) return;
 
             if (e.key === 'ArrowUp') {
-                ws.current.send(JSON.stringify({ type: 'MOVE', direction: 'up' }));
+                e.preventDefault(); // Prevent scrolling
+                sendMove('up');
             } else if (e.key === 'ArrowDown') {
-                ws.current.send(JSON.stringify({ type: 'MOVE', direction: 'down' }));
+                e.preventDefault(); // Prevent scrolling
+                sendMove('down');
             }
         };
 
@@ -106,15 +133,55 @@ export function GameCanvas() {
     };
 
     return (
-        <div className="flex flex-col items-center">
-            <h2 className="text-2xl mb-4">{status}</h2>
-            <canvas
-                ref={canvasRef}
-                width={800}
-                height={600}
-                className="border-4 border-white bg-black"
-            />
-            <p className="mt-4">Use Arrow Up/Down to move.</p>
+        <div className="flex flex-col h-[calc(100vh-100px)] w-full items-center justify-center p-2 overflow-hidden">
+            <h2 className="text-xl mb-2 text-center text-white">{status}</h2>
+
+            {!modeSelected && (
+                <div className="mb-4 flex gap-4 z-10">
+                    <button
+                        onClick={() => joinGame('ONLINE')}
+                        className="px-6 py-2 bg-indigo-600 rounded-lg text-white font-bold hover:bg-indigo-700 transition"
+                    >
+                        Play Online
+                    </button>
+                    <button
+                        onClick={() => joinGame('BOT')}
+                        className="px-6 py-2 bg-green-600 rounded-lg text-white font-bold hover:bg-green-700 transition"
+                    >
+                        Play vs Bot
+                    </button>
+                </div>
+            )}
+
+            <div className="flex-1 w-full relative min-h-0 flex items-center justify-center bg-gray-900 border-2 border-gray-700 rounded-lg">
+                <canvas
+                    ref={canvasRef}
+                    width={800}
+                    height={600}
+                    className="max-w-full max-h-full object-contain"
+                />
+            </div>
+
+            <div className="mt-4 flex gap-8">
+                <button
+                    className="w-20 h-20 rounded-full bg-blue-600/50 border-2 border-white/30 text-3xl flex items-center justify-center hover:bg-blue-600 active:scale-95 transition-all touch-manipulation backdrop-blur-sm"
+                    onTouchStart={(e) => { e.preventDefault(); sendMove('up'); }}
+                    onClick={() => sendMove('up')}
+                >
+                    ↑
+                </button>
+                <button
+                    className="w-20 h-20 rounded-full bg-blue-600/50 border-2 border-white/30 text-3xl flex items-center justify-center hover:bg-blue-600 active:scale-95 transition-all touch-manipulation backdrop-blur-sm"
+                    onTouchStart={(e) => { e.preventDefault(); sendMove('down'); }}
+                    onClick={() => sendMove('down')}
+                >
+                    ↓
+                </button>
+            </div>
+
+            <p className="mt-2 text-gray-500 text-xs">
+                Use Arrow Keys or Buttons
+            </p>
         </div>
     );
 }
