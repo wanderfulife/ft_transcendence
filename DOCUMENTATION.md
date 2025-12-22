@@ -1,25 +1,31 @@
 # ft_transcendence - Project Documentation
 
 ## 1. Project Overview
-**ft_transcendence** is a real-time multiplayer Pong web application with social features, authentication, and blockchain integration. This project was built to meet specific requirements involving 10 major technical modules.
+**ft_transcendence** is a real-time multiplayer Pong web application with social features, authentication, and blockchain integration. This project was built to meet specific requirements involving 10 key technical modules.
 
 ## 2. Project Status
 **Current State**: ✅ MVP Completed (Functional Prototype)
 All core modules have been initialized and basic functionality is implemented. The application is playable locally.
 
-### ✅ What is Already Done
-The following 10 Major Modules have been implemented:
+### ✅ Implemented Modules (Total: 10.5 Majors)
 
-1.  **Web - Backend Framework**: Fastify (Node.js) with TypeScript.
-2.  **Web - Frontend Framework**: React (Vite) + Tailwind CSS + TypeScript.
-3.  **Web - Database**: SQLite (via `sqlite3` driver).
-4.  **User Management - Standard**: User registration, login, and profile stats.
-5.  **User Management - Remote Auth**: OAuth integration points (Architecture ready).
-6.  **Gameplay - Remote Players**: Real-time WebSocket synchronization for remote play.
-7.  **Cybersecurity - 2FA & JWT**: Two-Factor Authentication (OTP) and JSON Web Tokens for session security.
-8.  **Web - Blockchain**: Smart Contract (Solidity) on Hardhat for score recording.
-9.  **Server-Side Pong**: Game physics and state management run entirely on the backend to prevent cheating.
-10. **Accessibility**: Responsive Design (Tailwind) and Internationalization (`i18next`).
+**Majors (1 Major = 1 Point)**
+1.  **Web**: Use a framework to build the backend.
+2.  **Web**: Store the score of a tournament in the Blockchain.
+3.  **User Management**: Standard user management, authentication, users across tournaments.
+4.  **User Management**: Implement remote authentication.
+5.  **Gameplay and user experience**: Remote players.
+6.  **Cybersecurity**: Implement Two-Factor Authentication (2FA) and JWT.
+7.  **Server-Side Pong**: Replace basic Pong with server-side Pong and implement an API.
+
+**Minors (2 Minors = 1 Major)**
+1.  **Web**: Use a database for the backend.
+2.  **Gameplay and user experience**: Game customization options.
+3.  **AI-Algo**: User and Game Stats Dashboards.
+4.  **Cybersecurity**: GDPR compliance options with user anonymization, local data management, and Account Deletion.
+5.  **Accessibility**: Multiple language support.
+6.  **Accessibility**: Support on all devices.
+7.  **Accessibility**: Expanding browser compatibility.
 
 ### 🚧 What Needs to be Done (Future Roadmap)
 While the core logical implementation is complete, the following areas require work for a production-ready application:
@@ -49,9 +55,9 @@ While the core logical implementation is complete, the following areas require w
 
 ### Frontend (`/frontend`)
 *   **Language**: TypeScript
-*   **Framework**: React (Vite)
+*   **Framework**: Vanilla TypeScript (Vite)
 *   **Styling**: Tailwind CSS
-*   **Key Libraries**: `react-router-dom` (Routing), `i18next` (Translations), `chart.js` (Stats).
+*   **Key Libraries**: Custom Router (Routing), `i18next` (Translations), `chart.js` (Stats).
 *   **Canvas**: `src/components/GameCanvas.tsx` (Rendering engine)
 
 ### Blockchain (`/blockchain`)

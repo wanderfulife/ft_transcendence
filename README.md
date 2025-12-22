@@ -51,6 +51,6 @@ npx hardhat node
 
 ## Architecture
 - **Backend**: Node.js (Fastify) + SQLite
-- **Frontend**: React (Vite) + Tailwind CSS
+- **Frontend**: Vanilla TypeScript (Vite) + Tailwind CSS
 - **Blockchain**: Hardhat + Solidity
 # ft_transcendence

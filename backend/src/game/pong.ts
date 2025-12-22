@@ -12,10 +12,12 @@ export class PongGame {
     intervalId: NodeJS.Timeout | null = null;
     onUpdate: (state: GameState) => void;
     onGameOver: (winner: number) => void;
+    isBot: boolean;
 
-    constructor(onUpdate: (state: GameState) => void, onGameOver: (winner: number) => void) {
+    constructor(onUpdate: (state: GameState) => void, onGameOver: (winner: number) => void, isBot: boolean = false) {
         this.onUpdate = onUpdate;
         this.onGameOver = onGameOver;
+        this.isBot = isBot;
         this.state = {
             ball: { x: 400, y: 300, dx: 5, dy: 5 },
             paddle1: { y: 250, score: 0, height: 100 },
@@ -53,6 +55,19 @@ export class PongGame {
     }
 
     update() {
+        // AI Movement
+        if (this.isBot) {
+            const paddleCenter = this.state.paddle2.y + this.state.paddle2.height / 2;
+            const targetY = this.state.ball.y;
+            const diff = targetY - paddleCenter;
+            const speed = 22; // Increased to match new game speed
+
+            if (Math.abs(diff) > 10) {
+                if (diff > 0) this.movePaddle(2, 'down');
+                else this.movePaddle(2, 'up');
+            }
+        }
+
         // Move ball
         this.state.ball.x += this.state.ball.dx;
         this.state.ball.y += this.state.ball.dy;
@@ -123,7 +138,7 @@ export class PongGame {
     }
 
     movePaddle(player: 1 | 2, direction: 'up' | 'down') {
-        const speed = 20;
+        const speed = 40;
         const paddle = player === 1 ? this.state.paddle1 : this.state.paddle2;
 
         if (direction === 'up') paddle.y = Math.max(0, paddle.y - speed);
