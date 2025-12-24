@@ -52,22 +52,65 @@ function setupControls() {
     const btnUp = document.getElementById('btn-up')!;
     const btnDown = document.getElementById('btn-down')!;
 
-    const send = (dir: 'up' | 'down') => {
+    let moveInterval: any = null;
+    let currentDir: 'up' | 'down' | null = null;
+
+    const startMove = (dir: 'up' | 'down') => {
+        if (currentDir === dir) return; // Already moving this way
+        currentDir = dir;
+
+        if (moveInterval) clearInterval(moveInterval);
+
+        // Send immediately
+        sendMove(dir);
+        // Then loop
+        moveInterval = setInterval(() => {
+            sendMove(dir);
+        }, 16); // ~60fps
+    };
+
+    const stopMove = (dir: 'up' | 'down') => {
+        if (currentDir === dir) {
+            currentDir = null;
+            if (moveInterval) {
+                clearInterval(moveInterval);
+                moveInterval = null;
+            }
+        }
+    };
+
+    const sendMove = (dir: 'up' | 'down') => {
         if (ws && ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({ type: 'MOVE', direction: dir }));
         }
     };
 
-    btnUp.onclick = () => send('up');
-    btnUp.ontouchstart = (e) => { e.preventDefault(); send('up'); };
+    // Touch/Mouse Events for Buttons
+    const setupBtn = (btn: HTMLElement, dir: 'up' | 'down') => {
+        btn.addEventListener('mousedown', (e) => { e.preventDefault(); startMove(dir); });
+        btn.addEventListener('mouseup', (e) => { e.preventDefault(); stopMove(dir); });
+        btn.addEventListener('mouseleave', (e) => { e.preventDefault(); stopMove(dir); });
 
-    btnDown.onclick = () => send('down');
-    btnDown.ontouchstart = (e) => { e.preventDefault(); send('down'); };
-
-    document.onkeydown = (e) => {
-        if (e.key === 'ArrowUp') { e.preventDefault(); send('up'); }
-        if (e.key === 'ArrowDown') { e.preventDefault(); send('down'); }
+        btn.addEventListener('touchstart', (e) => { e.preventDefault(); startMove(dir); });
+        btn.addEventListener('touchend', (e) => { e.preventDefault(); stopMove(dir); });
     };
+
+    setupBtn(btnUp, 'up');
+    setupBtn(btnDown, 'down');
+
+    // Keyboard Events
+    document.addEventListener('keydown', (e) => {
+        if (e.repeat) return; // Ignore auto-repeat, we handle it
+        if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') { startMove('up'); }
+        if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') { startMove('down'); }
+        if (e.key === ' ') { e.preventDefault(); startMove('up'); } // Map space to up just in case
+    });
+
+    document.addEventListener('keyup', (e) => {
+        if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') { stopMove('up'); }
+        if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') { stopMove('down'); }
+        if (e.key === ' ') { stopMove('up'); }
+    });
 
     document.getElementById('btn-online')!.onclick = () => joinGame('ONLINE');
     document.getElementById('btn-bot')!.onclick = () => joinGame('BOT');

@@ -138,7 +138,7 @@ export class PongGame {
     }
 
     movePaddle(player: 1 | 2, direction: 'up' | 'down') {
-        const speed = 40;
+        const speed = 10;
         const paddle = player === 1 ? this.state.paddle1 : this.state.paddle2;
 
         if (direction === 'up') paddle.y = Math.max(0, paddle.y - speed);

@@ -10,15 +10,33 @@ export interface Match {
     played_at: string;
 }
 
+import { BlockchainService } from '../services/blockchain';
+import { UserModel } from './user';
+
 export const MatchModel = {
     create: (player1_id: number, player2_id: number, score1: number, score2: number, winner_id: number): Promise<number> => {
         return new Promise((resolve, reject) => {
             db.run(
                 `INSERT INTO matches (player1_id, player2_id, score1, score2, winner_id) VALUES (?, ?, ?, ?, ?)`,
                 [player1_id, player2_id, score1, score2, winner_id],
-                function (err) {
+                async function (err) {
                     if (err) reject(err);
-                    else resolve(this.lastID);
+                    else {
+                        const matchId = this.lastID;
+                        resolve(matchId);
+
+                        // Async Blockchain Record
+                        try {
+                            const p1 = await UserModel.findById(player1_id);
+                            const p2 = await UserModel.findById(player2_id);
+                            const p1Name = p1 ? p1.username : 'Unknown';
+                            const p2Name = p2 ? p2.username : 'Unknown';
+
+                            await BlockchainService.recordMatch(matchId, p1Name, p2Name, score1, score2);
+                        } catch (e) {
+                            console.error('Failed to sync to blockchain', e);
+                        }
+                    }
                 }
             );
         });
